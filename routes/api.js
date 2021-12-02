@@ -85,8 +85,14 @@ module.exports = function (app) {
     })
 
     .put(function (req, res) {
-      let project = req.params.project;
-
+      if(!req.body._id){
+        Issue.findByIdAndUpdate(req.body._id, req.body, (err, issue) => {
+          if(err)
+            console.log(err);
+  
+          res.json({result: 'successfully updated', _id: issue._id})
+        })
+      }
     })
 
     .delete(function (req, res) {
