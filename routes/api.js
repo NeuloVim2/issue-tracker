@@ -85,13 +85,22 @@ module.exports = function (app) {
     })
 
     .put(function (req, res) {
-      if(!req.body._id){
-        Issue.findByIdAndUpdate(req.body._id, req.body, (err, issue) => {
-          if(err)
-            console.log(err);
-  
-          res.json({result: 'successfully updated', _id: issue._id})
-        })
+      console.log('make PUT request')
+      if(req.body._id){
+        console.log('id is true')
+        console.log(Object.entries(req.body).length > 0);
+        if(Object.entries(req.body).length > 0){
+          Issue.findByIdAndUpdate(req.body._id, req.body, (err, issue) => {
+            if(err)
+              console.log(err);
+    
+            res.json({result: 'successfully updated', _id: issue._id})
+          })
+        } else {
+          res.json( { error: 'no update field(s) sent', '_id': req.body._id });
+        }
+      } else {
+        res.json({ error: 'missing _id' })
       }
     })
 
