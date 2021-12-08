@@ -373,23 +373,78 @@ suite('Functional Tests', () => {
         });
     });
 
-    // it('Update an issue with an invalid _id', (done) => {
-    //     chai
-    //         .request(server)
-    //         .put('/api/issues/apitest')
-    //         .type('form')
-    //         .send({
-    //             _id: "61a8cd9ec27eb5109e7e7b6d"
-    //         })
-    //         .end((err, res) => {
-    //             if (err)
-    //                 console.log(err);
-    //             assert.equal(res.status, 200);
-    //             assert.equal(res.body.error, 'could not update', 'error is invalid');
-    //             assert.equal(res.body._id, "61a8cd9ec27eb5109e7e7b6d", '_id - is invalid');
+    it('Update an issue with an invalid _id', (done) => {
+      chai
+        .request(server)
+        .put('/api/issues/apitest')
+        .type('form')
+        .send({
+          _id: '61a8cd9ec27eb5109e7e0b6d',
+          issue_title: updatedReqData.issue_title,
+        })
+        .end((err, res) => {
+          if (err) console.log(err);
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, 'could not update', 'error is invalid');
+          assert.equal(
+            res.body._id,
+            '61a8cd9ec27eb5109e7e0b6d',
+            '_id - is invalid'
+          );
 
-    //             done();
-    //         })
-    // })
+          done();
+        });
+    });
+  });
+  suite('DELETE request to /api/issues/{project}', () => {
+    it('Delete an issue', (done) => {
+      chai
+        .request(server)
+        .delete('/api/issues/apitest')
+        .type('form')
+        .send({ _id: id })
+        .end((err, res) => {
+          if (err) console.log(err);
+          assert.equal(res.status, 200);
+          assert.equal(
+            res.body.result,
+            'successfully deleted',
+            'result is invalid'
+          );
+          assert.equal(res.body._id, id, 'id is invalid');
+          done();
+        });
+    });
+    it('Delete an issue with an invalid _id', (done) => {
+      chai
+        .request(server)
+        .delete('/api/issues/apitest')
+        .type('form')
+        .send({ _id: '61a8cd9ec27eb5109e7e0b6d' })
+        .end((err, res) => {
+          if (err) console.log(err);
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, 'could not delete', 'error is invalid');
+          assert.equal(
+            res.body._id,
+            '61a8cd9ec27eb5109e7e0b6d',
+            'id is invalid'
+          );
+          done();
+        });
+    });
+    it('Delete an issue with missing _id', (done) => {
+      chai
+        .request(server)
+        .delete('/api/issues/apitest')
+        .type('form')
+        .send({})
+        .end((err, res) => {
+          if (err) console.log(err);
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, 'missing _id', 'error is invalid');
+          done();
+        });
+    });
   });
 });

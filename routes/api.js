@@ -23,7 +23,6 @@ module.exports = function (app) {
       console.log('GET request to ', req.originalUrl);
       const { project } = req.params;
       const queryKeys = Object.keys(req.query);
-      console.log(queryKeys);
 
       // Check if there are no params in url(/api/issues/apitest?open=true)
       if (queryKeys.length === 0) {
@@ -32,7 +31,6 @@ module.exports = function (app) {
           .exec((err, issues) => {
             if (err) console.log('unable to get issue from db;\n', err);
 
-            console.log(issues);
             res.json(issues);
           });
         // Check if query contains only Issue schema properties
@@ -46,7 +44,6 @@ module.exports = function (app) {
           .exec((err, issues) => {
             if (err) console.log('unable to get issue from db;\n', err);
 
-            console.log(issues);
             res.json(issues);
           });
       } else {
@@ -55,6 +52,7 @@ module.exports = function (app) {
     })
 
     .post((req, res) => {
+      console.log('POST request to ', req.originalUrl);
       const { project } = req.params;
       const issueToCreate = {
         ...req.body,
@@ -94,15 +92,18 @@ module.exports = function (app) {
     })
 
     .put((req, res) => {
-      console.log('make PUT request');
+      console.log('PUT request to ', req.originalUrl);
       if (req.body._id) {
-        console.log('id is true');
-        console.log(Object.entries(req.body).length > 0);
-        if (Object.entries(req.body).length > 0) {
+        if (
+          Object.entries(req.body).length > 1 &&
+          Object.entries(req.body)[0].includes('_id')
+        ) {
           Issue.findByIdAndUpdate(req.body._id, req.body, (err, issue) => {
             if (err) console.log(err);
-
-            res.json({ result: 'successfully updated', _id: issue._id });
+            if (!issue) {
+              return res.json({ error: 'could not update', _id: req.body._id });
+            }
+            return res.json({ result: 'successfully updated', _id: issue._id });
           });
         } else {
           res.json({ error: 'no update field(s) sent', _id: req.body._id });
@@ -113,6 +114,20 @@ module.exports = function (app) {
     })
 
     .delete((req, res) => {
-      const { project } = req.params;
+      console.log('DELETE request to ', req.originalUrl);
+      if (req.body._id) {
+        Issue.findOneAndDelete({ _id: req.body._id }, (err, issue) => {
+          if (err) console.log(err);
+          if (!issue) {
+            return res.json({ error: 'could not delete', _id: req.body._id });
+          }
+          return res.json({
+            result: 'successfully deleted',
+            _id: req.body._id,
+          });
+        });
+      } else {
+        res.json({ error: 'missing _id' });
+      }
     });
 };
