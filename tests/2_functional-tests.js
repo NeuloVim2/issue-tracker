@@ -5,7 +5,7 @@ const chai = require('chai');
 
 const { assert } = chai;
 const server = require('../server');
-const Issue = require('../db/modeles/Issue');
+const Issue = require('../db/models/Issue');
 
 chai.use(chaiHttp);
 

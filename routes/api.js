@@ -1,4 +1,4 @@
-const Issue = require('../db/modeles/Issue');
+const Issue = require('../db/models/Issue');
 
 const verifyUrlQuery = (query) => {
   const issueSchema = [
