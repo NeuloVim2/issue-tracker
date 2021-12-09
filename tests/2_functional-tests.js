@@ -1,4 +1,4 @@
-/* global suite, it */
+/* global suite, it, beforeEach */
 
 const chaiHttp = require('chai-http');
 const chai = require('chai');
@@ -34,6 +34,7 @@ const updatedReqData = {
   status_text: 'updated status',
 };
 let id = '';
+let dateBefore = '';
 
 suite('Functional Tests', () => {
   suite('POST request to /api/issues/{project}', () => {
@@ -255,6 +256,9 @@ suite('Functional Tests', () => {
   });
   suite('PUT request to /api/issues/{project}', () => {
     it('Update one field on an issue', (done) => {
+      Issue.findById(id, (err, issue) => {
+        dateBefore = issue.updated_on;
+      });
       chai
         .request(server)
         .put('/api/issues/apitest')
@@ -281,6 +285,12 @@ suite('Functional Tests', () => {
               updatedReqData.issue_title,
               'issue_title - is invalid'
             );
+            assert.operator(
+              issue.updated_on,
+              '>=',
+              dateBefore,
+              'updated_on is invalid'
+            );
           });
 
           done();
@@ -288,6 +298,9 @@ suite('Functional Tests', () => {
     });
 
     it('Update multiple fields on an issue', (done) => {
+      Issue.findById(id, (err, issue) => {
+        dateBefore = issue.updated_on;
+      });
       chai
         .request(server)
         .put('/api/issues/apitest')
@@ -324,6 +337,12 @@ suite('Functional Tests', () => {
               'issue_text - is invalid'
             );
             assert.equal(res.body._id, id, '_id - is invalid');
+            assert.operator(
+              issue.updated_on,
+              '>=',
+              dateBefore,
+              'updated_on is invalid'
+            );
           });
 
           done();

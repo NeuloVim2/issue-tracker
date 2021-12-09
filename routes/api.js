@@ -98,10 +98,17 @@ module.exports = function (app) {
           Object.entries(req.body).length > 1 &&
           Object.entries(req.body)[0].includes('_id')
         ) {
-          Issue.findByIdAndUpdate(req.body._id, req.body, (err, issue) => {
+          const updatedInfo = {
+            ...req.body,
+            updated_on: new Date().toISOString(),
+          };
+          Issue.findByIdAndUpdate(req.body._id, updatedInfo, (err, issue) => {
             if (err) console.log(err);
             if (!issue) {
-              return res.json({ error: 'could not update', _id: req.body._id });
+              return res.json({
+                error: 'could not update',
+                _id: updatedInfo._id,
+              });
             }
             return res.json({ result: 'successfully updated', _id: issue._id });
           });
